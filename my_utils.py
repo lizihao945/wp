@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 import zipfile
 import datetime
@@ -12,7 +13,6 @@ def exec_shell(cmd):
 def extract_apks(path):
 
 	print "...working in " + os.getcwd()
-	print
 
 	# remove the folder if exists
 	exec_shell("rm -rf " + dest)
@@ -20,30 +20,41 @@ def extract_apks(path):
 	# copy the apks
 	exec_shell("cp -r " + path + "/system/app " + dest)
 	print "...pre-installed apps copied"
-	print
 
 	print "...extracing apks"
+	apps = set()
+
 	os.chdir(dest)
+
+	# get all the app names
 	for filename in os.listdir("."):
 		if filename.endswith(".apk"):
-			exec_shell("unzip " + filename + " -d " + filename[:-4])
+			apps.add(filename[:-4])
 
-	apps = set()
-	for foldername in os.listdir("."):
-		if os.path.isdir(foldername):
-			apps.add(foldername)
 	for appname in apps:
-		exec_shell("rm -rf " + appname + ".apk")
-		exec_shell("mv " + appname + ".odex " + appname)
+		exec_shell("mkdir " + appname)
 
+		# use classes.dex or [appname].odex
+		odex = os.getcwd() + "/" + appname + ".odex"
+		if os.path.exists(odex):
+			print odex.split("/")[-1] + " found"
+			exec_shell("mv " + odex + " " + appname)
+		else:
+			exec_shell("unzip -j " + appname + ".apk classes.dex -d " + appname + " > /tmp/foo")
+
+		# decode the xml file
+		exec_shell("/usr/share/androguard/androaxml.py -i " + appname + ".apk -o AndroidManifest.xml")
+		exec_shell("mv AndroidManifest.xml " + appname)
+		exec_shell("rm -f " + appname + ".apk")
 	os.chdir("..")
 
 	str = "/home/james/pre-installed/" + path.split("/")[-1]
 
 	exec_shell("rm -rf " + str)
-	exec_shell("mv -f app " + str)
+	exec_shell("mv app " + str)
 
 if __name__ == '__main__':
+
 	start_time = datetime.datetime.now()
 
 	extract_apks("/home/james/firmwares/miui_GalaxyNexus_4.5.9_5797ac9767_4.2")
