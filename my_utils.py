@@ -10,10 +10,18 @@ dest = "/tmp/app"
 
 def gen_per_list(path):
 	dom = parse(path)
-	permissions = dom.getElementsByTagName("uses-permission")
 	rt = []
+
+	permissions = dom.getElementsByTagName("uses-permission")
 	for p in permissions:
 		rt.append(p.getAttribute("android:name"))
+
+	# user-defined
+		"""
+	permissions = dom.getElementsByTagName("permission")
+	for p in permissions:
+		rt.append(p.getAttribute("android:name"))
+		"""
 	return rt
 
 def exec_shell(cmd):
@@ -60,7 +68,7 @@ def extract_apks(path):
 		permissions = gen_per_list(appname + "/AndroidManifest.xml")
 		print permissions
 
-		exec_shell("rm -f " + appname + ".apk")
+		exec_shell("mv " + appname + ".apk " + appname)
 	os.chdir("..")
 
 	str = "~/pre-installed/" + path.split("/")[-1]
