@@ -63,7 +63,7 @@ def extract_apks(path):
 		exec_shell("rm -f " + appname + ".apk")
 	os.chdir("..")
 
-	str = "/home/james/pre-installed/" + path.split("/")[-1]
+	str = "~/pre-installed/" + path.split("/")[-1]
 
 	exec_shell("rm -rf " + str)
 	exec_shell("mv app " + str)
@@ -72,8 +72,8 @@ if __name__ == '__main__':
 
 	start_time = datetime.datetime.now()
 
-	extract_apks("/home/james/firmwares/miui_GalaxyNexus_4.5.9_5797ac9767_4.2")
-	#extract_apks("/home/james/firmwares/test")
+	extract_apks("~/firmwares/miui_GalaxyNexus_4.5.9_5797ac9767_4.2")
+	#extract_apks("~/firmwares/test")
 
 	end_time = datetime.datetime.now()
 	print('The code ran for %ds' % ((end_time - start_time).seconds))
