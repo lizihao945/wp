@@ -3,8 +3,18 @@ import sys
 import shutil
 import zipfile
 import datetime
+import cPickle
+from xml.dom.minidom import parse, parseString
 
 dest = "/tmp/app"
+
+def gen_per_list(path):
+	dom = parse(path)
+	permissions = dom.getElementsByTagName("uses-permission")
+	rt = []
+	for p in permissions:
+		rt.append(p.getAttribute("android:name"))
+	return rt
 
 def exec_shell(cmd):
 	#print "$" + cmd
@@ -45,6 +55,11 @@ def extract_apks(path):
 		# decode the xml file
 		exec_shell("/usr/share/androguard/androaxml.py -i " + appname + ".apk -o AndroidManifest.xml")
 		exec_shell("mv AndroidManifest.xml " + appname)
+
+		# parse axml
+		permissions = gen_per_list(appname + "/AndroidManifest.xml")
+		print permissions
+
 		exec_shell("rm -f " + appname + ".apk")
 	os.chdir("..")
 
