@@ -85,6 +85,7 @@ public class main {
      * Run!
      */
     public static void main(String[] args) throws IOException {
+        System.out.println("DEBUG info added!");
         Locale locale = new Locale("en", "US");
         Locale.setDefault(locale);
 

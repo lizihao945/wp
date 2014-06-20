@@ -56,6 +56,7 @@ import javax.xml.parsers.ParserConfigurationException;
 public class baksmali {
 
     public static boolean disassembleDexFile(DexFile dexFile, final baksmaliOptions options) {
+        System.out.println("now ready to disassemble!");
         if (options.registerInfo != 0 || options.deodex) {
             try {
                 Iterable<String> extraClassPathEntries;
@@ -81,6 +82,7 @@ public class baksmali {
         }
 
         if (options.resourceIdFileEntries != null) {
+            System.out.println("resourceIdFileEntries != null");
             class PublicHandler extends DefaultHandler {
                 String prefix = null;
                 public PublicHandler(String prefix) {
@@ -107,6 +109,8 @@ public class baksmali {
             };
 
             for (Entry<String,String> entry: options.resourceIdFileEntries.entrySet()) {
+                System.out.println("resourceIdFileEntries:");
+                System.out.println(entry.getKey() + " " + entry.getValue());
                 try {
                     SAXParser saxp = SAXParserFactory.newInstance().newSAXParser();
                     String prefix = entry.getValue();
@@ -129,6 +133,7 @@ public class baksmali {
             }
         }
 
+        System.out.println("now sorting the classes");
         //sort the classes, so that if we're on a case-insensitive file system and need to handle classes with file
         //name collisions, then we'll use the same name for each class, if the dex file goes through multiple
         //baksmali/smali cycles for some reason. If a class with a colliding name is added or removed, the filenames
@@ -144,6 +149,7 @@ public class baksmali {
         ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
         List<Future<Boolean>> tasks = Lists.newArrayList();
 
+        System.out.println("disassemble each class...");
         for (final ClassDef classDef: classDefs) {
             tasks.add(executor.submit(new Callable<Boolean>() {
                 @Override public Boolean call() throws Exception {
